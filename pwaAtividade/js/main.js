@@ -38,3 +38,19 @@ function createArticle(article) {
            </div>
     `
 }
+
+const searchInput = document.getElementById('search-input');
+const searchBtn = document.getElementById('search-btn');
+
+searchBtn.addEventListener('click', () => {
+  const value = searchInput.value.trim();
+
+  if (value === '') {
+    alert('Digite um tema para pesquisar!');
+    return;
+  }
+
+  param = encodeURIComponent(value);
+  url = `https://newsapi.org/v2/everything?q=${param}&apiKey=${apiKey}`;
+  postNews();
+});
