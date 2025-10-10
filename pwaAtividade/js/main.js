@@ -7,36 +7,30 @@ if ('serviceWorker' in navigator) {
       reg = await navigator.serviceWorker.register('/sw.js', { type: "module" });
 
       console.log('Service worker registrada! 😎', reg);
-      postNews();
+      getCountries();
     } catch (err) {
       console.log('😥 Service worker registro falhou: ', err);
     }
   });
 }
 
-let param = 'AI'
-const apiKey = '4abf7d67ddef4ae3817c6f0f72c44afa';
-let url = `https://newsapi.org/v2/everything?q=${param}&apiKey=${apiKey}`;
+let url = `https://restcountries.com/v3.1/region/america`;
 const main = document.querySelector('main');
 
-async function postNews() {
+async function getCountries() {
   const res = await fetch(url);
   const data = await res.json();
-  console.log(url)
-  main.innerHTML = data.articles.map(createArticle).join('\n');
+  main.innerHTML = data.map(createCountryCard).join('');
 }
 
-function createArticle(article) {
+function createCountryCard(country) {
   return `
-           <div class="article">
-                <a href="${article.url}" target="_blank">
-                    <img src="${article.urlToImage}" 
-                      class="image" alt="${article.content}"/>
-                    <h2>${article.title}</h2>
-                    <p>${article.description}</p>
-                </a>
-           </div>
-    `
+    <div class="country-card">
+      <img src="${country.flags.svg}" alt="Bandeira de ${country.name.common}" class="flag">
+      <h2>País: ${country.name.common}</h2>
+      <p>Capital: ${country.capital ? country.capital[0] : 'Não informada'}</p>
+    </div>
+  `;
 }
 
 const searchInput = document.getElementById('search-input');
@@ -46,11 +40,10 @@ searchBtn.addEventListener('click', () => {
   const value = searchInput.value.trim();
 
   if (value === '') {
-    alert('Digite um tema para pesquisar!');
+    alert('Digite o nome de um país!');
     return;
   }
 
-  param = encodeURIComponent(value);
-  url = `https://newsapi.org/v2/everything?q=${param}&apiKey=${apiKey}`;
-  postNews();
+  url = `https://restcountries.com/v3.1/name/${encodeURIComponent(value)}`;
+  getCountries();
 });
